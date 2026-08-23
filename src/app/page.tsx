@@ -114,7 +114,7 @@ export default function Platform() {
             Sua<br/>Logo
           </div>
           <h1 className="text-3xl font-black tracking-tight text-white uppercase drop-shadow-md">
-            Burger <span className="text-yellow-400">Empire</span>
+            Sua <span className="text-yellow-400">Empresa Aqui</span>
           </h1>
           <p className="text-red-100 mt-2 text-sm max-w-xs flex items-center justify-center gap-1">
             <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
