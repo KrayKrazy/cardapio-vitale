@@ -108,7 +108,7 @@ export default function Platform() {
       
       {/* HEADER PREMIUM */}
       <header className="bg-red-700 w-full pt-8 pb-12 px-4 rounded-b-[40px] shadow-2xl relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-black/40 z-0"></div><img src="/hero.jpg" className="absolute inset-0 w-full h-full object-cover opacity-60 z-[-1]" />
         <div className="relative z-10 flex flex-col items-center justify-center text-center">
           <div className="w-24 h-24 bg-white text-red-700 rounded-full flex items-center justify-center font-black text-xs uppercase tracking-widest shadow-xl mb-4 border-4 border-yellow-400">
             Sua<br/>Logo
