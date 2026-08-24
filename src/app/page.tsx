@@ -1,11 +1,12 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { menuItems, orderBumps } from './MenuData';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Utensils, Star, MapPin, Truck, Trash2 } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Utensils, Star, MapPin, Truck, Trash2, CheckCircle2 } from 'lucide-react';
 
 export default function Platform() {
   const [cart, setCart] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState('Hambúrgueres');
+  const [mounted, setMounted] = useState(false);
   
   // Modals state
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
@@ -13,6 +14,11 @@ export default function Platform() {
   const [showUpsell, setShowUpsell] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [addedToast, setAddedToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const categories = Array.from(new Set(menuItems.map(i => i.category)));
 
@@ -30,7 +36,13 @@ export default function Platform() {
     } else {
       // Direct add to cart
       setCart([...cart, { ...product, cartId: Date.now() }]);
+      showToast(`Adicionado: ${product.name}`);
     }
+  };
+
+  const showToast = (msg: string) => {
+    setAddedToast(msg);
+    setTimeout(() => setAddedToast(null), 2500);
   };
 
   const toggleBump = (bumpId: number) => {
@@ -45,6 +57,7 @@ export default function Platform() {
     const bumps = orderBumps.filter(b => selectedBumps.includes(b.id));
     setCart([...cart, { ...selectedProduct, cartId: Date.now(), bumps }]);
     setSelectedProduct(null);
+    showToast(`Adicionado: ${selectedProduct.name}`);
   };
 
   const removeFromCart = (cartId: number) => {
@@ -95,43 +108,51 @@ export default function Platform() {
     }
   };
 
-  return (
-    <div className="min-h-screen pb-32 font-sans bg-[#0a0a0a]">
-      {/* DELIVERY BANNER */}
-      <div className="bg-green-600 text-white text-xs font-bold text-center py-2 px-4 flex items-center justify-center gap-2">
-        <Truck className="w-4 h-4" /> Entrega Grátis em toda a região hoje!
-      </div>
+  if (!mounted) return null;
 
-      {/* HEADER HERO */}
-      <header className="relative w-full h-56 flex flex-col justify-end p-6">
-        <div className="absolute inset-0 bg-black/50 z-0"></div>
-        <img src="/hero.jpg" className="absolute inset-0 w-full h-full object-cover opacity-50 z-[-1]" />
-        <div className="relative z-10">
-          <div className="bg-red-600 text-white text-xs font-black px-2 py-1 inline-block rounded mb-2 uppercase tracking-wider">
+  return (
+    <div className="min-h-screen pb-40 font-sans bg-[#0a0a0a] text-white selection:bg-red-600/30">
+      {/* PREMIUM TOAST */}
+      {addedToast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] bg-neutral-800/90 backdrop-blur-xl border border-neutral-700/50 text-white px-6 py-3 rounded-full font-medium shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex items-center gap-2 animate-in slide-in-from-top-10 fade-in duration-300">
+          <CheckCircle2 className="w-5 h-5 text-green-400" />
+          {addedToast}
+        </div>
+      )}
+
+      {/* HEADER HERO (IMMERSIVE) */}
+      <header className="relative w-full h-72 sm:h-80 flex flex-col justify-end p-6 overflow-hidden">
+        {/* Soft immersive gradient mask to remove harsh lines */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent z-10"></div>
+        <img src="/hero.jpg" className="absolute inset-0 w-full h-full object-cover z-0 scale-105 animate-in zoom-in duration-1000" />
+        
+        <div className="relative z-20 max-w-2xl mx-auto w-full">
+          <div className="bg-red-600/90 backdrop-blur text-white text-xs font-black px-3 py-1.5 inline-block rounded-lg mb-3 uppercase tracking-widest shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-700">
             Aberto agora
           </div>
-          <h1 className="text-4xl font-black text-white leading-tight">
-            Sua <span className="text-yellow-400">Empresa Aqui</span>
+          <h1 className="text-5xl font-black text-white leading-none tracking-tight animate-in fade-in slide-in-from-bottom-5 duration-700 delay-100">
+            Sua <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200">Empresa</span>
           </h1>
-          <p className="text-gray-200 text-sm mt-1 flex items-center gap-1">
-            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" /> 
-            4.9 (500+ avaliações)
+          <p className="text-gray-300 text-sm mt-3 flex items-center gap-1.5 font-medium animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
+            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" /> 
+            4.9 (500+ avaliações) <span className="mx-2 opacity-30">•</span> <Truck className="w-4 h-4 text-green-400" /> Entrega Grátis
           </p>
         </div>
       </header>
 
-      {/* CATEGORY NAV */}
-      <div className="sticky top-0 z-30 bg-[#0a0a0a]/95 backdrop-blur-md py-4 border-b border-neutral-800 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-        <div className="flex overflow-x-auto hide-scrollbar px-4 gap-3">
-          {categories.map(cat => (
+      {/* CATEGORY NAV (PREMIUM STICKY) */}
+      <div className="sticky top-0 z-30 bg-[#0a0a0a]/80 backdrop-blur-2xl py-3 border-b border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)]">
+        <div className="flex overflow-x-auto hide-scrollbar px-6 gap-3 max-w-2xl mx-auto">
+          {categories.map((cat, i) => (
             <button 
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
+              style={{ animationDelay: \`\${i * 50}ms\` }}
+              className={\`whitespace-nowrap px-6 py-3 rounded-full text-sm font-black transition-all duration-300 animate-in fade-in slide-in-from-right-8 \${
                 activeCategory === cat 
-                ? 'bg-yellow-400 text-black shadow-[0_0_15px_rgba(250,204,21,0.4)]' 
-                : 'bg-neutral-800 text-gray-300 hover:bg-neutral-700'
-              }`}
+                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-[0_0_20px_rgba(250,204,21,0.3)] scale-105' 
+                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+              }\`}
             >
               {cat}
             </button>
@@ -140,37 +161,42 @@ export default function Platform() {
       </div>
 
       {/* MAIN MENU */}
-      <main className="max-w-2xl mx-auto px-4 pt-6">
-        <h2 className="text-2xl font-black text-white mb-6 flex items-center gap-2">
-          {activeCategory}
-        </h2>
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 pt-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
+            {activeCategory}
+          </h2>
+          <div className="h-[1px] flex-1 bg-gradient-to-r from-white/10 to-transparent ml-4"></div>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {menuItems.filter(i => i.category === activeCategory).map((item, index) => (
             <div 
               key={item.id} 
               onClick={() => handleProductClick(item)}
-              className="bg-neutral-900 border border-neutral-800 rounded-3xl p-4 flex gap-4 cursor-pointer hover:border-red-600 transition-all shadow-lg active:scale-95 group relative overflow-hidden"
+              style={{ animationDelay: \`\${index * 75}ms\` }}
+              className="bg-[#111111] border border-white/5 rounded-[2rem] p-4 flex gap-4 cursor-pointer hover:border-red-500/50 hover:bg-[#161616] transition-all duration-300 shadow-xl active:scale-[0.98] group relative animate-in fade-in zoom-in-95 fill-mode-both"
             >
               {index === 0 && (
-                <div className="absolute top-0 right-0 bg-yellow-400 text-black text-[10px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-wider shadow-md">
+                <div className="absolute top-0 right-8 bg-yellow-400 text-black text-[10px] font-black px-4 py-1.5 rounded-b-xl uppercase tracking-widest shadow-[0_5px_15px_rgba(250,204,21,0.4)] z-10">
                   Mais Vendido
                 </div>
               )}
               
-              <div className="flex-1 flex flex-col justify-between">
+              <div className="flex-1 flex flex-col justify-between py-1">
                 <div>
-                  <h3 className="font-bold text-lg text-white group-hover:text-red-500 transition-colors pr-8">{item.name}</h3>
-                  <p className="text-sm text-gray-400 mt-1 line-clamp-2">{item.desc}</p>
+                  <h3 className="font-black text-lg text-white group-hover:text-red-500 transition-colors leading-tight pr-6">{item.name}</h3>
+                  <p className="text-sm text-gray-400 mt-2 line-clamp-2 leading-relaxed opacity-80">{item.desc}</p>
                 </div>
-                <div className="mt-4 font-black text-yellow-400 text-lg">
-                  R$ {item.price.toFixed(2).replace('.', ',')}
+                <div className="mt-4 font-black text-yellow-400 text-xl tracking-tight">
+                  <span className="text-sm opacity-70 mr-1">R$</span>{item.price.toFixed(2).replace('.', ',')}
                 </div>
               </div>
-              <div className="relative">
-                <img src={item.img} alt={item.name} className="w-28 h-28 object-cover rounded-2xl shadow-md border border-neutral-800" />
-                <div className="absolute -bottom-3 -right-3 bg-red-600 text-white p-2 rounded-full shadow-lg group-hover:bg-red-500 transition-colors">
-                  <Plus className="w-5 h-5" />
+              
+              <div className="relative shrink-0">
+                <img src={item.img} alt={item.name} className="w-32 h-32 object-cover rounded-[1.5rem] shadow-inner bg-neutral-800" />
+                <div className="absolute -bottom-2 -left-2 bg-gradient-to-br from-red-500 to-red-700 text-white p-2.5 rounded-full shadow-[0_5px_15px_rgba(220,38,38,0.5)] group-hover:scale-110 transition-transform duration-300">
+                  <Plus className="w-5 h-5" strokeWidth={3} />
                 </div>
               </div>
             </div>
@@ -178,39 +204,45 @@ export default function Platform() {
         </div>
       </main>
 
-      {/* ORDER BUMP MODAL */}
+      {/* ORDER BUMP MODAL (PREMIUM) */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center bg-black/80 backdrop-blur-sm sm:p-4 transition-all">
-          <div className="bg-neutral-900 w-full max-w-md sm:rounded-3xl rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom-10 max-h-[90vh] flex flex-col">
-            <div className="relative h-48 sm:h-56 shrink-0">
-              <img src={selectedProduct.img} className="w-full h-full object-cover sm:rounded-t-3xl rounded-t-3xl" alt="" />
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-md transition-all">
+          <div 
+            className="absolute inset-0 z-0" 
+            onClick={() => setSelectedProduct(null)} 
+          />
+          <div className="bg-[#111] w-full max-w-md sm:rounded-[2rem] rounded-t-[2rem] shadow-2xl animate-in slide-in-from-bottom-full duration-300 max-h-[90vh] flex flex-col relative z-10 border border-white/10">
+            
+            <div className="relative h-64 shrink-0">
+              <img src={selectedProduct.img} className="w-full h-full object-cover sm:rounded-t-[2rem] rounded-t-[2rem]" alt="" />
               <button 
                 onClick={() => setSelectedProduct(null)}
-                className="absolute top-4 right-4 bg-black/60 p-2 rounded-full text-white hover:bg-black/90 transition"
+                className="absolute top-4 right-4 bg-black/40 backdrop-blur-md p-2.5 rounded-full text-white hover:bg-black/80 transition shadow-lg"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5" strokeWidth={2.5} />
               </button>
-              <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-neutral-900 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#111] to-transparent"></div>
             </div>
             
-            <div className="p-6 overflow-y-auto hide-scrollbar -mt-6 relative z-10">
+            <div className="p-6 overflow-y-auto hide-scrollbar -mt-10 relative z-10 flex-1">
               <h2 className="text-3xl font-black text-white leading-tight">{selectedProduct.name}</h2>
               <p className="text-gray-400 text-sm mt-2 leading-relaxed">{selectedProduct.desc}</p>
               
-              <div className="mt-6 bg-neutral-800/50 rounded-2xl p-4 border border-yellow-500/20">
-                <h3 className="font-bold text-yellow-400 flex items-center gap-2 mb-3 text-lg">
+              <div className="mt-8 bg-white/5 rounded-3xl p-5 border border-yellow-500/20 backdrop-blur-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/5 rounded-full blur-3xl"></div>
+                <h3 className="font-black text-yellow-400 flex items-center gap-2 mb-4 text-lg">
                   <Utensils className="w-5 h-5" /> Turbine seu pedido
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-3 relative z-10">
                   {orderBumps.map(bump => (
-                    <div key={bump.id} onClick={() => toggleBump(bump.id)} className="flex items-center justify-between p-3 bg-neutral-900 rounded-xl cursor-pointer hover:bg-neutral-950 transition border border-transparent hover:border-neutral-700 shadow-sm">
+                    <div key={bump.id} onClick={() => toggleBump(bump.id)} className="flex items-center justify-between p-4 bg-black/40 rounded-2xl cursor-pointer hover:bg-black/60 transition-all border border-white/5 hover:border-white/10 shadow-sm active:scale-[0.98]">
                       <div className="flex items-center gap-3">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${selectedBumps.includes(bump.id) ? 'bg-red-600 border-red-600' : 'border-neutral-600 bg-neutral-800'}`}>
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${selectedBumps.includes(bump.id) ? 'bg-red-500 border-red-500' : 'border-neutral-600'}`}>
                           {selectedBumps.includes(bump.id) && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
                         </div>
-                        <span className="text-sm font-semibold text-gray-200">{bump.name}</span>
+                        <span className="text-sm font-bold text-gray-200">{bump.name}</span>
                       </div>
-                      <span className="text-yellow-400 font-bold text-sm">+ R$ {bump.price.toFixed(2).replace('.', ',')}</span>
+                      <span className="text-yellow-400 font-black text-sm">+ R$ {bump.price.toFixed(2).replace('.', ',')}</span>
                     </div>
                   ))}
                 </div>
@@ -218,10 +250,10 @@ export default function Platform() {
 
               <button 
                 onClick={confirmProductWithBumps}
-                className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl shadow-[0_5px_20px_rgba(220,38,38,0.4)] transition-transform active:scale-95 text-lg flex justify-between px-6 items-center"
+                className="w-full mt-6 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-black py-4.5 rounded-2xl shadow-[0_10px_30px_rgba(220,38,38,0.3)] transition-transform active:scale-[0.98] text-lg flex justify-between px-6 items-center border border-red-500/50"
               >
                 <span>Quero esse!</span>
-                <span>
+                <span className="bg-black/20 px-3 py-1 rounded-lg">
                   R$ {(
                     selectedProduct.price + 
                     orderBumps.filter(b => selectedBumps.includes(b.id)).reduce((a, b) => a + b.price, 0)
@@ -235,40 +267,53 @@ export default function Platform() {
 
       {/* CART REVIEW MODAL */}
       {showCart && (
-        <div className="fixed inset-0 z-[55] flex items-end justify-center sm:items-center bg-black/80 backdrop-blur-sm sm:p-4 transition-all">
-          <div className="bg-neutral-900 w-full max-w-md sm:rounded-3xl rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom-10 max-h-[90vh] flex flex-col">
-            <div className="p-6 border-b border-neutral-800 flex justify-between items-center bg-neutral-900 rounded-t-3xl">
-              <h2 className="text-2xl font-black text-white flex items-center gap-2">
-                <ShoppingCart className="w-6 h-6 text-yellow-400" /> Seu Pedido
+        <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center bg-black/60 backdrop-blur-md transition-all">
+          <div 
+            className="absolute inset-0 z-0" 
+            onClick={() => setShowCart(false)} 
+          />
+          <div className="bg-[#111] w-full max-w-md sm:rounded-[2rem] rounded-t-[2rem] shadow-2xl animate-in slide-in-from-bottom-full duration-300 max-h-[90vh] flex flex-col relative z-10 border border-white/10">
+            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 rounded-t-[2rem] backdrop-blur-md">
+              <h2 className="text-2xl font-black text-white flex items-center gap-3">
+                <div className="bg-yellow-400 p-2 rounded-xl">
+                  <ShoppingCart className="w-5 h-5 text-black" />
+                </div>
+                Seu Pedido
               </h2>
-              <button onClick={() => setShowCart(false)} className="bg-neutral-800 p-2 rounded-full text-white hover:bg-neutral-700">
-                <X className="w-5 h-5" />
+              <button onClick={() => setShowCart(false)} className="bg-black/50 p-2.5 rounded-full text-white hover:bg-black/80 transition">
+                <X className="w-5 h-5" strokeWidth={2.5} />
               </button>
             </div>
 
             <div className="p-6 overflow-y-auto flex-1 hide-scrollbar space-y-4">
               {cart.length === 0 ? (
-                <p className="text-center text-gray-500 py-10">Seu carrinho está vazio.</p>
+                <div className="text-center py-12 px-6">
+                  <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <ShoppingCart className="w-10 h-10 text-gray-600" />
+                  </div>
+                  <p className="text-gray-400 font-medium">Sua sacola está vazia.</p>
+                  <p className="text-gray-600 text-sm mt-2">Que tal adicionar um hambúrguer?</p>
+                </div>
               ) : (
                 cart.map(item => (
-                  <div key={item.cartId} className="flex gap-4 bg-neutral-800/50 p-4 rounded-2xl border border-neutral-800 relative">
-                    <img src={item.img} className="w-16 h-16 rounded-xl object-cover" alt="" />
-                    <div className="flex-1">
-                      <h4 className="text-white font-bold">{item.name}</h4>
+                  <div key={item.cartId} className="flex gap-4 bg-white/5 p-4 rounded-3xl border border-white/5 relative animate-in fade-in slide-in-from-right-4">
+                    <img src={item.img} className="w-20 h-20 rounded-2xl object-cover shadow-lg" alt="" />
+                    <div className="flex-1 py-1 pr-6">
+                      <h4 className="text-white font-black leading-tight">{item.name}</h4>
                       {item.bumps && item.bumps.length > 0 && (
-                        <div className="text-xs text-yellow-500 mt-1">
-                          + {item.bumps.map((b: any) => b.name).join(', ')}
+                        <div className="text-xs font-bold text-yellow-500/80 mt-1.5 flex flex-col gap-0.5">
+                          {item.bumps.map((b: any, i:number) => <span key={i}>+ {b.name}</span>)}
                         </div>
                       )}
-                      <div className="text-yellow-400 font-bold mt-2">
+                      <div className="text-yellow-400 font-black mt-2">
                         R$ {(item.price + (item.bumps?.reduce((a:number,b:any)=>a+b.price,0) || 0)).toFixed(2).replace('.', ',')}
                       </div>
                     </div>
                     <button 
                       onClick={() => removeFromCart(item.cartId)}
-                      className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition"
+                      className="absolute top-4 right-4 text-gray-500 hover:text-red-500 bg-black/40 p-2 rounded-full transition active:scale-90"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 ))
@@ -276,17 +321,17 @@ export default function Platform() {
             </div>
 
             {cart.length > 0 && (
-              <div className="p-6 bg-neutral-900 border-t border-neutral-800">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-gray-400">Total a pagar:</span>
-                  <span className="text-2xl font-black text-white">R$ {subtotal.toFixed(2).replace('.', ',')}</span>
+              <div className="p-6 bg-gradient-to-t from-[#0a0a0a] to-[#111] border-t border-white/5">
+                <div className="flex justify-between items-end mb-6 px-2">
+                  <span className="text-gray-400 font-medium">Total a pagar</span>
+                  <span className="text-3xl font-black text-white tracking-tight">R$ {subtotal.toFixed(2).replace('.', ',')}</span>
                 </div>
                 <button 
                   onClick={handleInitiateCheckout}
                   disabled={isLoading}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-black py-4 rounded-xl shadow-[0_5px_20px_rgba(22,163,74,0.4)] transition-transform active:scale-95 text-lg"
+                  className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white font-black py-4.5 rounded-2xl shadow-[0_10px_30px_rgba(34,197,94,0.3)] transition-all active:scale-[0.98] text-lg flex items-center justify-center gap-2 border border-green-400/30"
                 >
-                  {isLoading ? 'Processando...' : 'Ir para o Pagamento'}
+                  {isLoading ? 'Gerando Pagamento...' : 'Ir para o Pagamento'}
                 </button>
               </div>
             )}
@@ -294,58 +339,62 @@ export default function Platform() {
         </div>
       )}
 
-      {/* UPSELL MODAL */}
+      {/* UPSELL MODAL (PREMIUM) */}
       {showUpsell && upsellSuggestion && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
-          <div className="bg-gradient-to-b from-neutral-800 to-neutral-900 w-full max-w-sm rounded-3xl p-6 text-center shadow-[0_0_50px_rgba(220,38,38,0.2)] border border-red-900/50 animate-in zoom-in-95">
-            <h2 className="text-3xl font-black text-white mb-2 tracking-tight">Quase lá!</h2>
-            <p className="text-gray-400 text-sm mb-6 leading-relaxed">Que tal adicionar nossa sobremesa mais vendida para fechar com chave de ouro?</p>
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 transition-all">
+          <div className="bg-[#111] w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-[0_0_80px_rgba(220,38,38,0.15)] border border-white/10 animate-in zoom-in-95 duration-500 relative overflow-hidden">
             
-            <div className="relative w-40 h-40 mx-auto mb-4">
-              <div className="absolute inset-0 bg-yellow-400 rounded-full blur-xl opacity-20 animate-pulse"></div>
-              <img src={upsellSuggestion.img} className="relative w-full h-full rounded-full object-cover shadow-2xl border-4 border-neutral-800" alt="" />
+            {/* Background glowing effects */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-yellow-400/20 rounded-full blur-[80px] pointer-events-none"></div>
+
+            <h2 className="text-4xl font-black text-white mb-2 tracking-tight relative z-10">Quase lá!</h2>
+            <p className="text-gray-400 text-sm mb-8 leading-relaxed relative z-10 font-medium">Que tal adicionar nossa sobremesa mais vendida para fechar com chave de ouro?</p>
+            
+            <div className="relative w-48 h-48 mx-auto mb-6 z-10">
+              <div className="absolute inset-0 bg-gradient-to-t from-yellow-400 to-transparent rounded-full blur-2xl opacity-30 animate-pulse"></div>
+              <img src={upsellSuggestion.img} className="relative w-full h-full rounded-full object-cover shadow-2xl border-4 border-[#111]" alt="" />
             </div>
             
-            <h3 className="font-bold text-2xl text-yellow-400 leading-tight">{upsellSuggestion.name}</h3>
-            <p className="text-white font-black text-xl mt-2">Por apenas R$ {upsellSuggestion.price.toFixed(2).replace('.', ',')}</p>
+            <h3 className="font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200 leading-tight relative z-10">{upsellSuggestion.name}</h3>
+            <p className="text-white font-black text-xl mt-2 relative z-10">Por <span className="bg-yellow-400/20 px-2 py-0.5 rounded text-yellow-400">R$ {upsellSuggestion.price.toFixed(2).replace('.', ',')}</span></p>
 
-            <div className="mt-8 space-y-3">
+            <div className="mt-10 space-y-3 relative z-10">
               <button 
                 onClick={() => acceptUpsellAndPay(upsellSuggestion)}
-                className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-black py-4 rounded-xl shadow-[0_5px_20px_rgba(250,204,21,0.3)] transition-transform active:scale-95 text-lg"
+                className="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black py-4.5 rounded-2xl shadow-[0_10px_30px_rgba(250,204,21,0.3)] transition-all active:scale-[0.98] text-lg"
               >
                 Sim, eu quero!
               </button>
               <button 
                 onClick={declineUpsellAndPay}
-                className="w-full bg-transparent text-gray-400 hover:text-white font-bold py-3 rounded-xl transition"
+                className="w-full bg-transparent text-gray-500 hover:text-white font-bold py-3 rounded-2xl transition-colors"
               >
-                Não, obrigado. Ir para pagamento.
+                Não, ir para pagamento
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* FLOATING CART (Opens Cart Review) */}
+      {/* FLOATING CART (PREMIUM DOCK) */}
       {cart.length > 0 && !showCart && !selectedProduct && !showUpsell && (
-        <div className="fixed bottom-0 left-0 w-full z-40 bg-neutral-900/95 backdrop-blur-md border-t border-neutral-800 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] pb-4 pt-4 px-4 sm:pb-6 animate-in slide-in-from-bottom-10">
-          <div className="max-w-2xl mx-auto">
-            <button 
-              onClick={() => setShowCart(true)}
-              className="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-2xl font-black text-lg flex items-center justify-between shadow-[0_5px_25px_rgba(220,38,38,0.4)] transition-all active:scale-95"
-            >
-              <div className="flex items-center gap-3">
-                <div className="bg-black/30 w-10 h-10 rounded-full flex items-center justify-center font-bold">
-                  {cart.length}
-                </div>
-                <span>Ver Carrinho</span>
+        <div className="fixed bottom-6 left-4 right-4 z-40 mx-auto max-w-2xl animate-in slide-in-from-bottom-24 duration-500">
+          <button 
+            onClick={() => setShowCart(true)}
+            className="w-full bg-neutral-900/90 backdrop-blur-2xl border border-white/10 hover:bg-neutral-800/90 text-white p-2 pr-6 rounded-[2rem] font-black text-lg flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-all active:scale-[0.98] group overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="flex items-center gap-4 relative z-10">
+              <div className="bg-gradient-to-br from-red-500 to-red-700 w-14 h-14 rounded-full flex items-center justify-center font-black text-xl shadow-inner border border-red-400/30">
+                {cart.length}
               </div>
-              <span className="flex items-center gap-1">
-                R$ {subtotal.toFixed(2).replace('.', ',')} <ChevronRight className="w-5 h-5 opacity-70"/>
-              </span>
-            </button>
-          </div>
+              <span className="tracking-tight text-gray-100">Ver Carrinho</span>
+            </div>
+            <span className="flex items-center gap-1.5 text-yellow-400 relative z-10">
+              R$ {subtotal.toFixed(2).replace('.', ',')} 
+              <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" strokeWidth={3}/>
+            </span>
+          </button>
         </div>
       )}
 
