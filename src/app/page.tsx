@@ -199,7 +199,7 @@ export default function Platform() {
                 </h3>
                 <div className="space-y-3">
                   {orderBumps.map(bump => (
-                    <label key={bump.id} className="flex items-center justify-between p-3 bg-neutral-900 rounded-xl cursor-pointer hover:bg-neutral-950 transition">
+                    <div key={bump.id} onClick={() => toggleBump(bump.id)} className="flex items-center justify-between p-3 bg-neutral-900 rounded-xl cursor-pointer hover:bg-neutral-950 transition">
                       <div className="flex items-center gap-3">
                         <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 ${selectedBumps.includes(bump.id) ? 'bg-red-600 border-red-600' : 'border-gray-500'}`}>
                           {selectedBumps.includes(bump.id) && <div className="w-2 h-2 bg-white rounded-full"></div>}
