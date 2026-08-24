@@ -1,7 +1,7 @@
 'use client';
 import { useState, useMemo } from 'react';
 import { menuItems, orderBumps } from './MenuData';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Utensils, Star, MapPin, Truck } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, ChevronRight, Utensils, Star, MapPin, Truck, Trash2 } from 'lucide-react';
 
 export default function Platform() {
   const [cart, setCart] = useState<any[]>([]);
@@ -11,6 +11,7 @@ export default function Platform() {
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [selectedBumps, setSelectedBumps] = useState<number[]>([]);
   const [showUpsell, setShowUpsell] = useState(false);
+  const [showCart, setShowCart] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const categories = Array.from(new Set(menuItems.map(i => i.category)));
@@ -23,8 +24,13 @@ export default function Platform() {
   }, 0);
 
   const handleProductClick = (product: any) => {
-    setSelectedProduct(product);
-    setSelectedBumps([]); // reset bumps
+    if (product.hasBump) {
+      setSelectedProduct(product);
+      setSelectedBumps([]); 
+    } else {
+      // Direct add to cart
+      setCart([...cart, { ...product, cartId: Date.now() }]);
+    }
   };
 
   const toggleBump = (bumpId: number) => {
@@ -41,12 +47,17 @@ export default function Platform() {
     setSelectedProduct(null);
   };
 
+  const removeFromCart = (cartId: number) => {
+    setCart(cart.filter(item => item.cartId !== cartId));
+  };
+
   // Upsell Logic
   const upsellSuggestion = useMemo(() => {
     return menuItems.find(i => i.isUpsell);
   }, []);
 
   const handleInitiateCheckout = () => {
+    setShowCart(false);
     const hasUpsellInCart = cart.some(item => item.isUpsell);
     if (!hasUpsellInCart && upsellSuggestion) {
       setShowUpsell(true);
@@ -58,7 +69,7 @@ export default function Platform() {
   const acceptUpsellAndPay = (upsell: any) => {
     setCart(prev => [...prev, { ...upsell, cartId: Date.now() }]);
     setShowUpsell(false);
-    processCheckout(); // Vai processar com o upsell j no carrinho
+    processCheckout(); 
   };
 
   const declineUpsellAndPay = () => {
@@ -86,7 +97,7 @@ export default function Platform() {
 
   return (
     <div className="min-h-screen pb-32 font-sans bg-[#0a0a0a]">
-      {/* DELIVERY BANNER (CRO) */}
+      {/* DELIVERY BANNER */}
       <div className="bg-green-600 text-white text-xs font-bold text-center py-2 px-4 flex items-center justify-center gap-2">
         <Truck className="w-4 h-4" /> Entrega Grátis em toda a região hoje!
       </div>
@@ -109,7 +120,7 @@ export default function Platform() {
         </div>
       </header>
 
-      {/* CATEGORY NAV (STICKY) */}
+      {/* CATEGORY NAV */}
       <div className="sticky top-0 z-30 bg-[#0a0a0a]/95 backdrop-blur-md py-4 border-b border-neutral-800 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
         <div className="flex overflow-x-auto hide-scrollbar px-4 gap-3">
           {categories.map(cat => (
@@ -141,7 +152,6 @@ export default function Platform() {
               onClick={() => handleProductClick(item)}
               className="bg-neutral-900 border border-neutral-800 rounded-3xl p-4 flex gap-4 cursor-pointer hover:border-red-600 transition-all shadow-lg active:scale-95 group relative overflow-hidden"
             >
-              {/* BEST SELLER BADGE */}
               {index === 0 && (
                 <div className="absolute top-0 right-0 bg-yellow-400 text-black text-[10px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-wider shadow-md">
                   Mais Vendido
@@ -168,7 +178,7 @@ export default function Platform() {
         </div>
       </main>
 
-      {/* ORDER BUMP MODAL (MOBILE OPTIMIZED) */}
+      {/* ORDER BUMP MODAL */}
       {selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center bg-black/80 backdrop-blur-sm sm:p-4 transition-all">
           <div className="bg-neutral-900 w-full max-w-md sm:rounded-3xl rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom-10 max-h-[90vh] flex flex-col">
@@ -223,6 +233,67 @@ export default function Platform() {
         </div>
       )}
 
+      {/* CART REVIEW MODAL */}
+      {showCart && (
+        <div className="fixed inset-0 z-[55] flex items-end justify-center sm:items-center bg-black/80 backdrop-blur-sm sm:p-4 transition-all">
+          <div className="bg-neutral-900 w-full max-w-md sm:rounded-3xl rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom-10 max-h-[90vh] flex flex-col">
+            <div className="p-6 border-b border-neutral-800 flex justify-between items-center bg-neutral-900 rounded-t-3xl">
+              <h2 className="text-2xl font-black text-white flex items-center gap-2">
+                <ShoppingCart className="w-6 h-6 text-yellow-400" /> Seu Pedido
+              </h2>
+              <button onClick={() => setShowCart(false)} className="bg-neutral-800 p-2 rounded-full text-white hover:bg-neutral-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1 hide-scrollbar space-y-4">
+              {cart.length === 0 ? (
+                <p className="text-center text-gray-500 py-10">Seu carrinho está vazio.</p>
+              ) : (
+                cart.map(item => (
+                  <div key={item.cartId} className="flex gap-4 bg-neutral-800/50 p-4 rounded-2xl border border-neutral-800 relative">
+                    <img src={item.img} className="w-16 h-16 rounded-xl object-cover" alt="" />
+                    <div className="flex-1">
+                      <h4 className="text-white font-bold">{item.name}</h4>
+                      {item.bumps && item.bumps.length > 0 && (
+                        <div className="text-xs text-yellow-500 mt-1">
+                          + {item.bumps.map((b: any) => b.name).join(', ')}
+                        </div>
+                      )}
+                      <div className="text-yellow-400 font-bold mt-2">
+                        R$ {(item.price + (item.bumps?.reduce((a:number,b:any)=>a+b.price,0) || 0)).toFixed(2).replace('.', ',')}
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => removeFromCart(item.cartId)}
+                      className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {cart.length > 0 && (
+              <div className="p-6 bg-neutral-900 border-t border-neutral-800">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-400">Total a pagar:</span>
+                  <span className="text-2xl font-black text-white">R$ {subtotal.toFixed(2).replace('.', ',')}</span>
+                </div>
+                <button 
+                  onClick={handleInitiateCheckout}
+                  disabled={isLoading}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-black py-4 rounded-xl shadow-[0_5px_20px_rgba(22,163,74,0.4)] transition-transform active:scale-95 text-lg"
+                >
+                  {isLoading ? 'Processando...' : 'Ir para o Pagamento'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* UPSELL MODAL */}
       {showUpsell && upsellSuggestion && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
@@ -256,20 +327,19 @@ export default function Platform() {
         </div>
       )}
 
-      {/* FLOATING CART (CRO OPTIMIZED) */}
-      {cart.length > 0 && (
-        <div className="fixed bottom-0 left-0 w-full z-40 bg-neutral-900/95 backdrop-blur-md border-t border-neutral-800 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] pb-4 pt-4 px-4 sm:pb-6">
+      {/* FLOATING CART (Opens Cart Review) */}
+      {cart.length > 0 && !showCart && !selectedProduct && !showUpsell && (
+        <div className="fixed bottom-0 left-0 w-full z-40 bg-neutral-900/95 backdrop-blur-md border-t border-neutral-800 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] pb-4 pt-4 px-4 sm:pb-6 animate-in slide-in-from-bottom-10">
           <div className="max-w-2xl mx-auto">
             <button 
-              onClick={handleInitiateCheckout}
-              disabled={isLoading}
-              className="w-full bg-red-600 hover:bg-red-700 disabled:bg-neutral-700 text-white px-6 py-4 rounded-2xl font-black text-lg flex items-center justify-between shadow-[0_5px_25px_rgba(220,38,38,0.4)] transition-all active:scale-95"
+              onClick={() => setShowCart(true)}
+              className="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-2xl font-black text-lg flex items-center justify-between shadow-[0_5px_25px_rgba(220,38,38,0.4)] transition-all active:scale-95"
             >
               <div className="flex items-center gap-3">
                 <div className="bg-black/30 w-10 h-10 rounded-full flex items-center justify-center font-bold">
-                  {isLoading ? <span className="animate-spin text-xl">↻</span> : cart.length}
+                  {cart.length}
                 </div>
-                <span>{isLoading ? 'Processando...' : 'Finalizar Pedido'}</span>
+                <span>Ver Carrinho</span>
               </div>
               <span className="flex items-center gap-1">
                 R$ {subtotal.toFixed(2).replace('.', ',')} <ChevronRight className="w-5 h-5 opacity-70"/>
