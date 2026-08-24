@@ -113,9 +113,9 @@ export default function Platform() {
     <div className="min-h-screen pb-40 font-sans bg-[#030303] text-white selection:bg-red-600/30 relative overflow-hidden">
       {/* PREMIUM AMBIENT BACKGROUND */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-20%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-red-600/10 blur-[120px] animate-pulse" style={{ animationDuration: '8s' }}></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full bg-yellow-500/5 blur-[100px] animate-pulse" style={{ animationDuration: '12s' }}></div>
-        <div className="absolute top-[40%] left-[50%] w-[40vw] h-[40vw] max-w-[500px] max-h-[500px] rounded-full bg-red-900/10 blur-[120px]"></div>
+        <div className="absolute top-[-10%] left-[-20%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] rounded-full bg-red-600/10 blur-[120px] animate-blob"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full bg-yellow-500/5 blur-[100px] animate-blob animation-delay-4000"></div>
+        <div className="absolute top-[40%] left-[50%] w-[40vw] h-[40vw] max-w-[500px] max-h-[500px] rounded-full bg-red-900/10 blur-[120px] animate-blob animation-delay-2000"></div>
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay"></div>
       </div>
       
@@ -149,13 +149,13 @@ export default function Platform() {
 
         {/* CATEGORY NAV */}
         <div className="sticky top-0 z-30 bg-[#030303]/80 backdrop-blur-2xl py-3 border-b border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.4)]">
-          <div className="flex overflow-x-auto hide-scrollbar px-6 gap-3 max-w-2xl mx-auto">
+          <div className="flex overflow-x-auto hide-scrollbar px-4 sm:px-6 gap-3 max-w-2xl mx-auto after:content-[''] after:w-4 after:shrink-0">
             {categories.map((cat, i) => (
               <button 
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 style={{ animationDelay: `${i * 50}ms` }}
-                className={`whitespace-nowrap px-6 py-3 rounded-full text-sm font-black transition-all duration-300 animate-in fade-in slide-in-from-right-8 ${
+                className={`whitespace-nowrap px-4 py-2 sm:px-6 sm:py-3 rounded-full text-[13px] sm:text-sm font-black transition-all duration-300 animate-in fade-in slide-in-from-right-8 ${
                   activeCategory === cat 
                   ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-[0_0_20px_rgba(250,204,21,0.3)] scale-105' 
                   : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
