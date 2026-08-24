@@ -1,7 +1,7 @@
 'use client';
 import { useState, useMemo, useEffect } from 'react';
 import { menuItems, orderBumps } from './MenuData';
-import { ShoppingCart, Plus, Minus, X, ChevronRight, Utensils, Star, MapPin, Truck, Trash2, CheckCircle2 } from 'lucide-react';
+import { ShoppingCart, Plus, X, ChevronRight, Utensils, Star, Truck, Trash2, CheckCircle2 } from 'lucide-react';
 
 export default function Platform() {
   const [cart, setCart] = useState<any[]>([]);
@@ -147,12 +147,12 @@ export default function Platform() {
             <button 
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              style={{ animationDelay: \`\${i * 50}ms\` }}
-              className={\`whitespace-nowrap px-6 py-3 rounded-full text-sm font-black transition-all duration-300 animate-in fade-in slide-in-from-right-8 \${
+              style={{ animationDelay: `${i * 50}ms` }}
+              className={`whitespace-nowrap px-6 py-3 rounded-full text-sm font-black transition-all duration-300 animate-in fade-in slide-in-from-right-8 ${
                 activeCategory === cat 
                 ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-[0_0_20px_rgba(250,204,21,0.3)] scale-105' 
                 : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-              }\`}
+              }`}
             >
               {cat}
             </button>
@@ -174,7 +174,7 @@ export default function Platform() {
             <div 
               key={item.id} 
               onClick={() => handleProductClick(item)}
-              style={{ animationDelay: \`\${index * 75}ms\` }}
+              style={{ animationDelay: `${index * 75}ms` }}
               className="bg-[#111111] border border-white/5 rounded-[2rem] p-4 flex gap-4 cursor-pointer hover:border-red-500/50 hover:bg-[#161616] transition-all duration-300 shadow-xl active:scale-[0.98] group relative animate-in fade-in zoom-in-95 fill-mode-both"
             >
               {index === 0 && (
