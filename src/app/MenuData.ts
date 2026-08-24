@@ -212,7 +212,7 @@ export const menuItems = [
     "desc": "A combinação perfeita para saciar sua fome com desconto especial!",
     "price": 45,
     "category": "Combos",
-    "img": "https://images.unsplash.com/photo-1594212202875-54d4f8fb36c0?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&w=600&q=80",
     "hasBump": false
   },
   {
@@ -221,7 +221,7 @@ export const menuItems = [
     "desc": "A combinação perfeita para saciar sua fome com desconto especial!",
     "price": 50,
     "category": "Combos",
-    "img": "https://images.unsplash.com/photo-1594212202875-54d4f8fb36c0?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&w=600&q=80",
     "hasBump": false
   },
   {
@@ -230,7 +230,7 @@ export const menuItems = [
     "desc": "A combinação perfeita para saciar sua fome com desconto especial!",
     "price": 55,
     "category": "Combos",
-    "img": "https://images.unsplash.com/photo-1594212202875-54d4f8fb36c0?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&w=600&q=80",
     "hasBump": false
   },
   {
@@ -239,7 +239,7 @@ export const menuItems = [
     "desc": "A combinação perfeita para saciar sua fome com desconto especial!",
     "price": 60,
     "category": "Combos",
-    "img": "https://images.unsplash.com/photo-1594212202875-54d4f8fb36c0?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&w=600&q=80",
     "hasBump": false
   },
   {
@@ -248,7 +248,7 @@ export const menuItems = [
     "desc": "A combinação perfeita para saciar sua fome com desconto especial!",
     "price": 65,
     "category": "Combos",
-    "img": "https://images.unsplash.com/photo-1594212202875-54d4f8fb36c0?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&w=600&q=80",
     "hasBump": false
   },
   {
@@ -257,7 +257,7 @@ export const menuItems = [
     "desc": "A combinação perfeita para saciar sua fome com desconto especial!",
     "price": 70,
     "category": "Combos",
-    "img": "https://images.unsplash.com/photo-1594212202875-54d4f8fb36c0?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&w=600&q=80",
     "hasBump": false
   },
   {
@@ -266,7 +266,7 @@ export const menuItems = [
     "desc": "A combinação perfeita para saciar sua fome com desconto especial!",
     "price": 75,
     "category": "Combos",
-    "img": "https://images.unsplash.com/photo-1594212202875-54d4f8fb36c0?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&w=600&q=80",
     "hasBump": false
   },
   {
@@ -275,7 +275,7 @@ export const menuItems = [
     "desc": "A combinação perfeita para saciar sua fome com desconto especial!",
     "price": 80,
     "category": "Combos",
-    "img": "https://images.unsplash.com/photo-1594212202875-54d4f8fb36c0?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&w=600&q=80",
     "hasBump": false
   },
   {
@@ -284,7 +284,7 @@ export const menuItems = [
     "desc": "A combinação perfeita para saciar sua fome com desconto especial!",
     "price": 85,
     "category": "Combos",
-    "img": "https://images.unsplash.com/photo-1594212202875-54d4f8fb36c0?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&w=600&q=80",
     "hasBump": false
   },
   {
@@ -293,7 +293,7 @@ export const menuItems = [
     "desc": "A combinação perfeita para saciar sua fome com desconto especial!",
     "price": 90,
     "category": "Combos",
-    "img": "https://images.unsplash.com/photo-1594212202875-54d4f8fb36c0?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&w=600&q=80",
     "hasBump": false
   },
   {
@@ -383,7 +383,7 @@ export const menuItems = [
     "desc": "Sorvete artesanal batido.",
     "price": 24.9,
     "category": "Sobremesas",
-    "img": "https://images.unsplash.com/photo-1572490122747-3968b75bf699?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&w=600&q=80",
     "hasBump": false,
     "isUpsell": true
   },
@@ -413,7 +413,7 @@ export const menuItems = [
     "desc": "Porção com 4 mini churros quentinhos.",
     "price": 15,
     "category": "Sobremesas",
-    "img": "https://images.unsplash.com/photo-1629115916087-7a8c11fb5c59?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&w=600&q=80",
     "hasBump": false,
     "isUpsell": false
   },
@@ -423,7 +423,7 @@ export const menuItems = [
     "desc": "Fatia generosa do tradicional pudim.",
     "price": 12,
     "category": "Sobremesas",
-    "img": "https://images.unsplash.com/photo-1590137575308-410a6234b6e2?auto=format&w=600&q=80",
+    "img": "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&w=600&q=80",
     "hasBump": false,
     "isUpsell": false
   },
