@@ -207,7 +207,7 @@ export default function Platform() {
                         <span className="text-sm font-medium text-gray-200">{bump.name}</span>
                       </div>
                       <span className="text-yellow-400 font-bold text-sm">+ R$ {bump.price.toFixed(2)}</span>
-                    </label>
+                    </div>
                   ))}
                 </div>
               </div>
